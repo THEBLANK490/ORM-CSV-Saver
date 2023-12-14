@@ -1,4 +1,5 @@
 import csv
+import os 
 
 class CSV_Saver:
     id = 0
@@ -72,15 +73,16 @@ class CSV_Saver:
         with open(file_name,"w", newline='') as file:
             csv_write = csv.writer(file)
             csv_write.writerow(heading)
-            
+        print("File Created.\n")    
 
     #a method to read the input from the user and returns them in a list
+    @classmethod
     def get_new_data(cls):
         cls.id += 1
         name = input("Enter your name: ")
         age = input("Enter your age: ")
         city = input("Enter the city name: ")
-        return [CSV_Saver.id,name,age,city]
+        return [cls.id,name,age,city]
 
 class CSV_Operation(CSV_Saver):
     # This child class will provide a tailored interface for specific data manipulation tasks.
@@ -105,19 +107,28 @@ while True:
         2. Press 2 to write the data into the table.
         3. Press 3 to read the data from the table. 
         4. Press 4 to update the data.
-        5. Press 5 to delete the data. \n""")
+        5. Press 5 to delete the data.
+        6. Press 6 to write the data into the table from child class. 
+        7. Press 4 to update the data into the table from child class.\n""")
+        
     
     choice = input("Enter YOur Choice: ")
     if choice == '1':
-        heading = ["id","Name", "Age", "City"]
-        # calling the static method to create the heading 
-        CSV_Saver.create_CSV(file_name,heading)
+        if not os.path.isfile(file_name):
+            heading = ["id","Name", "Age", "City"]
+            # calling the static method to create the heading 
+            CSV_Saver.create_CSV(file_name,heading)
+        else:
+            print("File already exists.")
 
     elif choice == '2':
-        #ask the user for input by accessing the method in the csv_saver class
-        new_data =  csv_saver.get_new_data()
-        #to create the data accessing the create_data method 
-        csv_saver.create_data(new_data)
+        if os.path.isfile(file_name):
+            #ask the user for input by accessing the method in the csv_saver class
+            new_data =  csv_saver.get_new_data()
+            #to create the data accessing the create_data method 
+            csv_saver.create_data(new_data)
+        else:
+            print("Please create a table by pressing 1.")
 
     elif choice == '3':
         #access the method reading in the CSV_saver class
@@ -136,9 +147,12 @@ while True:
     elif choice == '6':
         csv_operation = CSV_Operation(file_name)
         csv_operation.create()
+    
+    elif choice == '7':
+        index_to_update = int(input("Enter the Id to update: "))
+        updated_data = csv_saver.get_new_data()
+        csv_operation = CSV_Operation(file_name)
+        csv_operation.update(index_to_update, updated_data)
 
     else:
         print("Invalid choice. Please enter a valid option.")
-
-
-
