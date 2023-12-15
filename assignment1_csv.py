@@ -109,7 +109,11 @@ class CSV_Operation(CSV_Saver):
     def update(self,id,updated_data):
         self.updating(id,updated_data)
 
-file_name = "test.csv"
+# file_name = "test.csv"
+file_name = input("Enter a file_name: ")
+if ".csv" in file_name:
+    print("Valid file name. Please press 1 to create a table.\n")
+    
 
 #create an object of the parent class CSV_Saver
 csv_saver = CSV_Saver(file_name)
