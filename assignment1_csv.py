@@ -3,7 +3,7 @@ import os
 
 class CSV_Saver:
     id = 0
-    
+   
     #constructor for the CSV_Saver class 
     def __init__(self,file_name):
         self.file_name = file_name
@@ -27,28 +27,32 @@ class CSV_Saver:
             csv_write.writerow(new_data)
 
     # a method for updating the rows in the csv file 
-    def updating(self, id, updated_data):
+    def updating(self, target_id, updated_data):
+        rows = []  # To store the updated data
         found = False
-        #read the CSV file 
-        rows = self.reading()
-        #iterate through the rows and select the specified ID to update and set the flag(found) to True
-        for i, row in enumerate(rows):
-            if row["id"] == str(id):
-                rows[i] = updated_data
-                found = True
-                break
 
-        #if found then update the value else say row doesnot exists
+        # Read the existing data
+        with open(self.file_name, 'r', newline='') as file:
+            csv_reader = csv.DictReader(file)
+            for row in csv_reader:
+                if row["id"] == str(target_id):
+                    updated_row = {"id": target_id, "Name": row["Name"], "Age": row["Age"], "City": row["City"]}
+                    updated_row.update(updated_data)
+                    row = updated_row
+                    found = True
+                rows.append(row)
+
         if found:
+            # Write the updated data back to the CSV file
             with open(self.file_name, 'w', newline='') as file:
-                fieldnames = ["id","Name","Age","City"]
-                csv_writer = csv.DictWriter(file,fieldnames=fieldnames) #csv writer dict object
+                fieldnames = ["id", "Name", "Age", "City"]  # Adjust based on your CSV structure
+                csv_writer = csv.DictWriter(file, fieldnames=fieldnames)
                 csv_writer.writeheader()
-                csv_writer.writerows(rows) # write the updated rows back to csv_file
-            print(f"Row with ID {id} updated successfully.")
+                csv_writer.writerows(rows)
+            print(f"Data for ID {target_id} updated successfully.")
         else:
-            print(f"Row with ID {id} does not exist.")
-        
+            print(f"No data found for ID {target_id}.")
+            
 
     #a method for deleting the rows in the csv file
     def deleting_data_rows(self, id_to_delete):
@@ -81,17 +85,18 @@ class CSV_Saver:
         print("File Created.\n") 
 
     #a method to read the input from the user and returns them in a dict to update the data
-    @classmethod
-    def get_new_data_for_update(cls):
+    # @classmethod
+    def get_new_data_for_update(self,index_to_update):
         name = input("Enter your name: ")
         age = input("Enter your age: ")
         city = input("Enter the city name: ")
-        return {"id": cls.id, "Name": name, "Age": age, "City": city}
+        return {"id": index_to_update, "Name": name, "Age": age, "City": city}
     
     #a method to read the input from the user and returns them in a dict to write the data
     @classmethod
     def get_new_data(cls):
         cls.id += 1
+        # cls.save_id() # save the updated id
         name = input("Enter your name: ")
         age = input("Enter your age: ")
         city = input("Enter the city name: ")
@@ -109,11 +114,11 @@ class CSV_Operation(CSV_Saver):
     def update(self,id,updated_data):
         self.updating(id,updated_data)
 
-# file_name = "test.csv"
 file_name = input("Enter a file_name: ")
 if ".csv" in file_name:
     print("Valid file name. Please press 1 to create a table.\n")
     
+# CSV_Saver.load_id()
 
 #create an object of the parent class CSV_Saver
 csv_saver = CSV_Saver(file_name)
@@ -159,7 +164,7 @@ while True:
     elif choice == '4':
         if os.path.isfile(file_name):
             index_to_update = int(input("Enter the Id to update: "))
-            updated_data = csv_saver.get_new_data_for_update()
+            updated_data = csv_saver.get_new_data_for_update(index_to_update)
             csv_saver.updating(index_to_update, updated_data)
         else:
             print("Please create a table by pressing 1. \n")
@@ -182,7 +187,7 @@ while True:
     elif choice == '7':
         if os.path.isfile(file_name):
             index_to_update = int(input("Enter the Id to update: "))
-            updated_data = csv_saver.get_new_data_for_update()
+            updated_data = csv_saver.get_new_data_for_update(index_to_update)
             csv_operation = CSV_Operation(file_name)
             csv_operation.update(index_to_update, updated_data)
         else:
