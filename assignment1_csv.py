@@ -3,7 +3,7 @@ import os
 
 class CSV_Saver:
     id = 0
-   
+
     #constructor for the CSV_Saver class 
     def __init__(self,file_name):
         self.file_name = file_name
@@ -96,14 +96,13 @@ class CSV_Saver:
     @classmethod
     def get_new_data(cls):
         cls.id += 1
-        # cls.save_id() # save the updated id
         name = input("Enter your name: ")
         age = input("Enter your age: ")
         city = input("Enter the city name: ")
         return {"id": cls.id, "Name": name, "Age": age, "City": city}
 
+# This child class will provide a tailored interface for specific data manipulation tasks.
 class CSV_Operation(CSV_Saver):
-    # This child class will provide a tailored interface for specific data manipulation tasks.
     def __init__(self,file_name):
         super().__init__(file_name)
 
@@ -118,8 +117,6 @@ file_name = input("Enter a file_name: ")
 if ".csv" in file_name:
     print("Valid file name. Please press 1 to create a table.\n")
     
-# CSV_Saver.load_id()
-
 #create an object of the parent class CSV_Saver
 csv_saver = CSV_Saver(file_name)
 
