@@ -30,13 +30,13 @@ class CSV_Saver:
     def updating(self, target_id, updated_data):
         rows = []  # To store the updated data
         found = False
-
         # Read the existing data
         with open(self.file_name, 'r', newline='') as file:
             csv_reader = csv.DictReader(file)
             for row in csv_reader:
                 if row["id"] == str(target_id):
                     updated_row = {"id": target_id, "Name": row["Name"], "Age": row["Age"], "City": row["City"]}
+                    print("updated row is: ",updated_row)
                     updated_row.update(updated_data)
                     row = updated_row
                     found = True
@@ -85,12 +85,25 @@ class CSV_Saver:
         print("File Created.\n") 
 
     #a method to read the input from the user and returns them in a dict to update the data
-    # @classmethod
     def get_new_data_for_update(self,index_to_update):
         name = input("Enter your name: ")
         age = input("Enter your age: ")
         city = input("Enter the city name: ")
-        return {"id": index_to_update, "Name": name, "Age": age, "City": city}
+        updated_data =  {"id": index_to_update, "Name": name, "Age": age, "City": city}
+        with open(self.file_name, 'r', newline='') as file:
+            csv_reader = csv.DictReader(file)
+            for row in csv_reader:
+                if row["id"] == str(index_to_update):
+                    updated_row = {"id": index_to_update, "Name": row["Name"], "Age": row["Age"], "City": row["City"]}
+
+        if name == "":
+            updated_data.update({"Name":updated_row["Name"]})
+        if age == "":
+            updated_data.update({"Age":updated_row["Age"]})
+        if city == "":
+            updated_data.update({"City":updated_row["City"]})
+        
+        return updated_data
     
     #a method to read the input from the user and returns them in a dict to write the data
     @classmethod
@@ -103,7 +116,7 @@ class CSV_Saver:
 
 # This child class will provide a tailored interface for specific data manipulation tasks.
 class CSV_Operation(CSV_Saver):
-    def __init__(self,file_name):
+    def __init__(self,file_name):   
         super().__init__(file_name)
 
     def create(self):
